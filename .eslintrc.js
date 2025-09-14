@@ -20,5 +20,7 @@ module.exports = {
     'import/first': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/newline-after-import': 'off',
+    'no-param-reassign': 'off',
+    'max-len': 'off',
   },
 };
