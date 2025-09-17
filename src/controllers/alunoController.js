@@ -1,10 +1,35 @@
 import Aluno from '../models/aluno';
-
+import Foto from '../models/foto';
 // Index
 class AlunoController {
+  static imc(peso, altura) {
+    const imc = peso / (altura * altura);
+    return imc.toFixed(2);
+  }
+
   async index(req, res) {
-    const alunos = await Aluno.findAll();
-    res.json(alunos);
+    const alunos = await Aluno.findAll({
+      attributes: ['id', 'nome', 'sobrenome', 'email', 'idade', 'peso', 'altura', 'imc'],
+      order: [[Foto, 'id', 'DESC']],
+      include: {
+        model: Foto,
+        attributes: ['url', 'filename'],
+      },
+    });
+
+    const listaAlunos = alunos.map((aluno) => ({
+      id: aluno.id,
+      nome: aluno.nome,
+      sobrenome: aluno.sobrenome,
+      email: aluno.email,
+      idade: aluno.idade,
+      peso: aluno.peso,
+      altura: aluno.altura,
+      imc: aluno.imc,
+      Fotos: aluno.Fotos,
+    }));
+
+    res.json(listaAlunos);
   }
 
   // Store
@@ -38,7 +63,14 @@ class AlunoController {
   // Show
   async show(req, res) {
     try {
-      const aluno = await Aluno.findByPk(req.params.id);
+      const aluno = await Aluno.findByPk(req.params.id, {
+        attributes: ['id', 'nome', 'sobrenome', 'email', 'idade', 'peso', 'altura'],
+        order: [[Foto, 'id', 'DESC']],
+        include: {
+          model: Foto,
+          attributes: ['url', 'filename'],
+        },
+      });
 
       if (!aluno) {
         return res.status(400).json({
