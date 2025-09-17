@@ -62,9 +62,25 @@ export default class Aluno extends Model {
           },
         },
       },
+      imc: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          const peso = this.getDataValue('peso');
+          const altura = this.getDataValue('altura');
+
+          if (!peso || !altura) return null;
+
+          const imc = peso / altura ** 2;
+          return imc.toFixed(2);
+        },
+      },
     }, {
       sequelize,
     });
     return this;
+  }
+
+  static associate(models) {
+    this.hasMany(models.Foto, { foreignKey: 'aluno_id' });
   }
 }
